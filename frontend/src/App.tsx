@@ -16,8 +16,6 @@ import { VacationDay } from "./types";
 import axios from "axios";
 import { useTheme, useMediaQuery } from "@mui/material";
 
-// const API_URL = process.env.REACT_APP_API_URL || "http://backend:8000";
-
 function App() {
   const currentTheme = useTheme();
   const isMobile = useMediaQuery(currentTheme.breakpoints.down("sm"));

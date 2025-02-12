@@ -54,6 +54,7 @@ services:
       - REACT_APP_API_URL=http://backend:8000
       - WDS_SOCKET_PORT=0
       - CHOKIDAR_USEPOLLING=true
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
     depends_on:
       backend:
         condition: service_healthy

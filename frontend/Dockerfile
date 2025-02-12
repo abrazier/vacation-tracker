@@ -1,5 +1,4 @@
-# filepath: Dockerfile
-FROM node:16-alpine
+FROM node:23.7-alpine
 
 WORKDIR /app
 

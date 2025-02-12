@@ -1,32 +1,19 @@
-import { IconButton, Tooltip } from "@mui/material";
-import { Icon } from "@mdi/react";
-import { mdiWeatherNight, mdiWeatherSunny } from "@mdi/js";
+// filepath: /Users/aaron/Documents/code_repos/vacation-tracker/frontend/src/components/ThemeToggle.tsx
+import { Box, IconButton, SxProps } from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
 
-interface ThemeToggleProps {
+export interface ThemeToggleProps {
   isDarkMode: boolean;
   onToggle: () => void;
+  sx?: SxProps;
 }
 
-export function ThemeToggle({ isDarkMode, onToggle }: ThemeToggleProps) {
+export function ThemeToggle({ isDarkMode, onToggle, sx }: ThemeToggleProps) {
   return (
-    <Tooltip
-      title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-    >
-      <IconButton
-        onClick={onToggle}
-        sx={{
-          position: "absolute",
-          top: 16,
-          right: 16,
-          color: isDarkMode ? "text.primary" : "text.primary",
-        }}
-      >
-        <Icon
-          path={isDarkMode ? mdiWeatherSunny : mdiWeatherNight}
-          size={1}
-          color="currentColor"
-        />
+    <Box sx={sx}>
+      <IconButton onClick={onToggle} color="inherit">
+        {isDarkMode ? <Brightness7 /> : <Brightness4 />}
       </IconButton>
-    </Tooltip>
+    </Box>
   );
 }

@@ -1,21 +1,15 @@
-FROM node:23.7-alpine
+# filepath: Dockerfile
+FROM node:16-alpine
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install dependencies
 COPY package.json package-lock.json ./
+RUN npm install --legacy-peer-deps
 
-# Clear npm cache and install dependencies
-RUN npm cache clean --force && \
-    npm install --legacy-peer-deps
-
-# Copy the rest of the application
+# Copy the rest of the files
 COPY . .
-
-# Create src directory if it doesn't exist
-RUN mkdir -p src
 
 EXPOSE 3000
 
-# Start the development server
 CMD ["npm", "start"]

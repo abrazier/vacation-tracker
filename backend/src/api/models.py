@@ -48,21 +48,27 @@ class VacationDayDB(Base):
 
 
 # Pydantic Models for Request/Response
+class VacationDayCreate(BaseModel):
+    date: str
+    hours: float
+    confirmed: bool = False
+
+
 class VacationTotal(BaseModel):
     total_hours: float
 
 
 class VacationDay(BaseModel):
-    date: date
+    id: int
+    date: str
     hours: float
-    confirmed: bool = False
+    confirmed: bool
 
 
 class VacationDayUpdate(BaseModel):
     confirmed: bool
 
 
-# Add these new models for response
 class VacationDayResponse(BaseModel):
     date: str
     hours: float
@@ -71,4 +77,4 @@ class VacationDayResponse(BaseModel):
 
 class VacationResponse(BaseModel):
     total_hours: float
-    vacation_days: List[VacationDayResponse]
+    vacation_days: List[VacationDay]

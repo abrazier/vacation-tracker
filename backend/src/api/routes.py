@@ -23,13 +23,20 @@ async def set_total_hours(data: models.VacationTotal, db: Session = Depends(get_
 
 
 @router.post("/api/days")
-async def add_vacation_day(day: models.VacationDay, db: Session = Depends(get_db)):
-    db_day = models.VacationDayDB(
-        date=day.date, hours=day.hours, confirmed=day.confirmed
-    )
-    db.add(db_day)
-    db.commit()
-    return {"message": "Vacation day added successfully"}
+async def add_vacation_day(
+    day: models.VacationDayCreate, db: Session = Depends(get_db)
+):
+    try:
+        date_obj = datetime.strptime(day.date, "%Y-%m-%d").date()
+        db_day = models.VacationDayDB(
+            date=date_obj, hours=day.hours, confirmed=day.confirmed
+        )
+        db.add(db_day)
+        db.commit()
+        return {"message": "Vacation day added successfully"}
+    except Exception as e:
+        print(f"Error adding vacation day: {str(e)}")
+        raise HTTPException(status_code=422, detail=str(e))
 
 
 @router.patch("/api/days/{day_id}")
@@ -55,6 +62,7 @@ async def get_vacation_data(db: Session = Depends(get_db)):
         "total_hours": float(total.total_hours) if total else 0,
         "vacation_days": [
             {
+                "id": day.id,
                 "date": day.date.isoformat(),
                 "hours": float(day.hours),
                 "confirmed": day.confirmed,
@@ -62,3 +70,14 @@ async def get_vacation_data(db: Session = Depends(get_db)):
             for day in days
         ],
     }
+
+
+@router.delete("/api/days/{day_id}")
+async def delete_vacation_day(day_id: int, db: Session = Depends(get_db)):
+    day = db.query(models.VacationDayDB).filter_by(id=day_id).first()
+    if not day:
+        raise HTTPException(status_code=404, detail="Vacation day not found")
+
+    db.delete(day)
+    db.commit()
+    return {"message": "Vacation day deleted successfully"}

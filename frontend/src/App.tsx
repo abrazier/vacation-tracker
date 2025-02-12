@@ -14,10 +14,13 @@ import { VacationGraph } from "./components/VacationGraph";
 import { VacationList } from "./components/VacationList";
 import { VacationDay } from "./types";
 import axios from "axios";
+import { useTheme, useMediaQuery } from "@mui/material";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+// const API_URL = process.env.REACT_APP_API_URL || "http://backend:8000";
 
 function App() {
+  const currentTheme = useTheme();
+  const isMobile = useMediaQuery(currentTheme.breakpoints.down("sm"));
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("darkMode");
     return saved ? JSON.parse(saved) : false;
@@ -31,7 +34,7 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/data`);
+      const response = await axios.get(`/api/data`);
       console.log("API Response:", response.data);
       setTotalHours(response.data.total_hours);
       setVacationDays(response.data.vacation_days);
@@ -46,20 +49,27 @@ function App() {
     confirmed: boolean
   ) => {
     try {
-      await axios.post(`${API_URL}/api/days`, {
-        date: date.toISOString().split("T")[0],
+      const formattedDate = date.toISOString().split("T")[0];
+      console.log("Submitting:", { date: formattedDate, hours, confirmed });
+
+      await axios.post(`/api/days`, {
+        date: formattedDate,
         hours,
         confirmed,
       });
-      fetchData();
-    } catch (error) {
+
+      await fetchData();
+    } catch (error: any) {
       console.error("Error adding vacation day:", error);
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+      }
     }
   };
 
   const handleTotalHoursSubmit = async (hours: number) => {
     try {
-      await axios.post(`${API_URL}/api/total`, {
+      await axios.post(`/api/total`, {
         total_hours: hours,
       });
       fetchData();
@@ -73,10 +83,20 @@ function App() {
     confirmed: boolean
   ) => {
     try {
-      await axios.patch(`${API_URL}/api/days/${dayId}`, { confirmed });
+      console.log("Sending update:", { dayId, confirmed }); // Add debug logging
+      await axios.patch(`/api/days/${dayId}`, { confirmed });
       await fetchData();
     } catch (error) {
       console.error("Error updating confirmation:", error);
+    }
+  };
+
+  const handleDelete = async (dayId: number) => {
+    try {
+      await axios.delete(`/api/days/${dayId}`);
+      await fetchData();
+    } catch (error) {
+      console.error("Error deleting vacation day:", error);
     }
   };
 
@@ -97,17 +117,24 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="md" sx={{ position: "relative" }}>
+      <Container
+        maxWidth="md"
+        sx={{
+          position: "relative",
+          px: isMobile ? 1 : 3,
+          py: 2,
+        }}
+      >
         <ThemeToggle isDarkMode={isDarkMode} onToggle={handleThemeToggle} />
 
-        <Box sx={{ my: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
-            Vacation Tracker
-          </Typography>
-        </Box>
-
-        <Box sx={{ mb: 4 }}>
-          <Paper elevation={2} sx={{ p: 3 }}>
+        <Box sx={{ mb: 2 }}>
+          <Paper
+            elevation={2}
+            sx={{
+              p: isMobile ? 2 : 3,
+              overflow: "auto",
+            }}
+          >
             <VacationForm
               onSubmit={handleVacationSubmit}
               onTotalHoursSubmit={handleTotalHoursSubmit}
@@ -116,9 +143,15 @@ function App() {
           </Paper>
         </Box>
 
-        <Box sx={{ mb: 4 }}>
-          <Paper elevation={2} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
+        <Box sx={{ mb: 2 }}>
+          <Paper
+            elevation={2}
+            sx={{
+              p: isMobile ? 2 : 3,
+              overflow: "auto",
+            }}
+          >
+            <Typography variant={isMobile ? "subtitle1" : "h6"} gutterBottom>
               Vacation Hours Overview
             </Typography>
             <VacationGraph
@@ -128,14 +161,21 @@ function App() {
           </Paper>
         </Box>
 
-        <Box sx={{ mb: 4 }}>
-          <Paper elevation={2} sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Vacation Days List
+        <Box sx={{ mb: 2 }}>
+          <Paper
+            elevation={2}
+            sx={{
+              p: isMobile ? 2 : 3,
+              overflow: "auto",
+            }}
+          >
+            <Typography variant={isMobile ? "subtitle1" : "h6"} gutterBottom>
+              Vacation List
             </Typography>
             <VacationList
               vacationDays={vacationDays}
               onConfirmationUpdate={handleConfirmationUpdate}
+              onDelete={handleDelete}
             />
           </Paper>
         </Box>

@@ -1,19 +1,24 @@
-import { useState } from 'react';
-import { 
-  TextField, 
-  Button, 
-  Stack, 
-  FormControlLabel, 
-  Switch 
-} from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
+import { useState } from "react";
+import {
+  TextField,
+  Button,
+  Stack,
+  FormControlLabel,
+  Switch,
+} from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
 
 interface VacationFormProps {
-  onSubmit: (date: Date, hours: number, confirmed: boolean) => void;
-  onTotalHoursSubmit: (hours: number) => void;
+  onSubmit: (date: Date, hours: number, confirmed: boolean) => Promise<void>;
+  onTotalHoursSubmit: (hours: number) => Promise<void>;
+  onConfirmationUpdate: (dayId: number, confirmed: boolean) => Promise<void>;
 }
 
-export function VacationForm({ onSubmit, onTotalHoursSubmit }: VacationFormProps) {
+export function VacationForm({
+  onSubmit,
+  onTotalHoursSubmit,
+  onConfirmationUpdate,
+}: VacationFormProps) {
   const [date, setDate] = useState<Date | null>(null);
   const [hours, setHours] = useState<number>(8);
   const [confirmed, setConfirmed] = useState(false);
@@ -29,8 +34,8 @@ export function VacationForm({ onSubmit, onTotalHoursSubmit }: VacationFormProps
           onChange={(e) => setTotalHours(Number(e.target.value))}
           sx={{ width: 200 }}
         />
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={() => onTotalHoursSubmit(totalHours)}
         >
           Set Total Hours

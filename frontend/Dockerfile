@@ -3,7 +3,7 @@ FROM node:23.7-alpine
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Clear npm cache and install dependencies
 RUN npm cache clean --force && \

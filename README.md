@@ -1,6 +1,6 @@
 # Vacation Tracker
 
-Track and plan your vacation time over the year.
+Track and plan your vacation time over the year. Built using React and FastAPI with postgresdb for storage.
 
 ## Features
 

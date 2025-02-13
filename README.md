@@ -21,6 +21,7 @@ Track and plan your vacation time over the year. Built using React and FastAPI w
    ```
    docker compose up -d --build
    ```
+   Access the app at IP:3000.
 
 ## Screenshots
 
